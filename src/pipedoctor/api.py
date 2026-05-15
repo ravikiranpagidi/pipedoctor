@@ -10,6 +10,7 @@ from pipedoctor.detectors import (
     detect_cdc_health,
     detect_distribution,
     detect_duplicates,
+    detect_execution,
     detect_join_risk,
     detect_nulls,
     detect_partition_health,
@@ -94,6 +95,57 @@ def diagnose_join(
     return report
 
 
+def diagnose_execution(
+    df: Any,
+    *,
+    name: str = "execution",
+    show: bool = True,
+) -> DiagnosisReport:
+    """Diagnose engine-specific execution risks without running full profiling."""
+
+    profile = _execution_profile(df, name=name)
+    findings: list[Finding] = []
+    findings.extend(detect_execution(profile))
+    findings.extend(detect_performance(profile))
+    report = DiagnosisReport(
+        name=name,
+        engine=profile.engine,
+        findings=findings,
+        metrics=_execution_metrics(profile),
+    )
+    if show:
+        report.print()
+    return report
+
+
+def diagnose_plan_text(
+    plan_text: str,
+    *,
+    name: str = "spark_plan",
+    show: bool = True,
+) -> DiagnosisReport:
+    """Diagnose pasted Spark plan text when no live DataFrame is available."""
+
+    profile = DataProfile(
+        engine="pyspark",
+        name=name,
+        rows=None,
+        columns=[],
+        schema={},
+        execution={"plan_lines": len(plan_text.splitlines())},
+        plan_text=plan_text,
+    )
+    report = DiagnosisReport(
+        name=name,
+        engine=profile.engine,
+        findings=detect_performance(profile),
+        metrics=_execution_metrics(profile),
+    )
+    if show:
+        report.print()
+    return report
+
+
 def _profile(df: Any, options: DiagnoseOptions) -> DataProfile:
     engine = engine_name(df)
     if engine == "pandas":
@@ -115,6 +167,22 @@ def _profile(df: Any, options: DiagnoseOptions) -> DataProfile:
         )
     raise TypeError(
         "PipeDoctor supports Pandas and PySpark DataFrames. "
+        f"Got {type(df).__module__}.{type(df).__name__}."
+    )
+
+
+def _execution_profile(df: Any, *, name: str) -> DataProfile:
+    engine = engine_name(df)
+    if engine == "pandas":
+        from pipedoctor.adapters.pandas import profile_pandas_execution
+
+        return profile_pandas_execution(df, name=name)
+    if engine == "pyspark":
+        from pipedoctor.adapters.spark import profile_spark_execution
+
+        return profile_spark_execution(df, name=name)
+    raise TypeError(
+        "PipeDoctor execution diagnostics support Pandas and PySpark DataFrames. "
         f"Got {type(df).__module__}.{type(df).__name__}."
     )
 
@@ -157,4 +225,15 @@ def _metrics(profile: DataProfile) -> dict[str, Any]:
         "sampled": profile.sampled,
         "sample_rows": profile.sample_rows,
         "partitions": profile.partitions,
+    }
+
+
+def _execution_metrics(profile: DataProfile) -> dict[str, Any]:
+    return {
+        "rows": profile.rows,
+        "columns": profile.columns,
+        "column_count": profile.column_count,
+        "schema": profile.schema,
+        "partitions": profile.partitions,
+        "execution": profile.execution,
     }

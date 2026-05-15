@@ -9,7 +9,8 @@ It is not an orchestration platform or a monitoring dashboard. It is a fast loca
 Documentation wiki: [github.com/ravikiranpagidi/pipedoctor/wiki](https://github.com/ravikiranpagidi/pipedoctor/wiki)  
 Capability guide: [Capabilities](https://github.com/ravikiranpagidi/pipedoctor/wiki/Capabilities)  
 Installation guide: [Installation](https://github.com/ravikiranpagidi/pipedoctor/wiki/Installation)  
-Common workflows: [Common Workflows](https://github.com/ravikiranpagidi/pipedoctor/wiki/Common-Workflows)
+Common workflows: [Common Workflows](https://github.com/ravikiranpagidi/pipedoctor/wiki/Common-Workflows)  
+Execution diagnostics: [Execution Diagnostics](https://github.com/ravikiranpagidi/pipedoctor/wiki/Execution-Diagnostics)
 
 ```python
 from pipedoctor import diagnose
@@ -122,6 +123,35 @@ report = diagnose(
 
 For Spark, PipeDoctor uses bounded sampling for data-quality checks and parses the execution plan for shuffle, join, UDF, sort, and partition hints. That keeps the default notebook workflow practical.
 
+## Execution Diagnostics
+
+Use `diagnose_execution()` when you want a focused execution review without the full health-check surface:
+
+```python
+from pipedoctor import diagnose_execution
+
+execution_report = diagnose_execution(df)
+```
+
+The API stays the same across engines, but the evidence is engine-specific:
+
+| Engine | What gets checked |
+| --- | --- |
+| Pandas | local memory footprint, object-heavy frames, duplicate indexes, duplicate columns, and very wide frames |
+| PySpark | explain-plan signals such as exchanges, sort-merge joins, Cartesian joins, Python UDFs, repeated sorts, and very wide plans |
+
+If you only have copied Spark plan text from logs or `df.explain()`, diagnose that directly:
+
+```python
+from pipedoctor import diagnose_plan_text
+
+plan_report = diagnose_plan_text("""
+AdaptiveSparkPlan
++- Exchange hashpartitioning(customer_id#1, 200)
++- SortMergeJoin
+""")
+```
+
 ## Schema Drift
 
 Compare a current DataFrame against a previous DataFrame or a stored schema:
@@ -163,6 +193,7 @@ pipedoctor csv examples/orders.csv --format markdown --output report.md
 | Join explosion | Many-to-many join risk and estimated cardinality growth |
 | Partitions | Spark partition count, overpartitioning, underpartitioning hints |
 | Distribution | Numeric outliers and cardinality anomalies |
+| Execution | Pandas local-execution risks plus Spark plan signals |
 | Performance | Spark plan signals: exchanges, sort-merge joins, Cartesian joins, Python UDFs, wide plans |
 | CDC | Duplicate change events, missing order column, late-arriving records |
 | Summary | Health score, risk list, and recommendations |
@@ -191,6 +222,7 @@ report.to_json("report.json")
 | [Installation](https://github.com/ravikiranpagidi/pipedoctor/wiki/Installation) | GitHub install, local development, and notebook setup |
 | [Quick Start](https://github.com/ravikiranpagidi/pipedoctor/wiki/Quick-Start) | First diagnosis with Pandas and PySpark |
 | [Common Workflows](https://github.com/ravikiranpagidi/pipedoctor/wiki/Common-Workflows) | Useful checkpoints in real pipeline work |
+| [Execution Diagnostics](https://github.com/ravikiranpagidi/pipedoctor/wiki/Execution-Diagnostics) | Pandas execution risks and Spark plan analysis |
 | [Reading Reports](https://github.com/ravikiranpagidi/pipedoctor/wiki/Reading-Reports) | How to interpret severity, evidence, and recommendations |
 | [Detector Documentation](https://github.com/ravikiranpagidi/pipedoctor/wiki/Detector-Documentation) | Detailed detector behavior and limitations |
 | [Architecture Overview](https://github.com/ravikiranpagidi/pipedoctor/wiki/Architecture-Overview) | Adapters, profiles, detectors, and report flow |
@@ -201,6 +233,7 @@ report.to_json("report.json")
 - no required runtime dependencies
 - lazy Pandas and PySpark support
 - one public API with engine-specific adapters underneath
+- focused execution diagnostics for both Pandas and PySpark
 - safe bounded sampling for Spark
 - plain Python report objects
 - explainable rules, not magic scores

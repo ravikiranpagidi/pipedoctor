@@ -2,7 +2,7 @@
 
 PipeDoctor is intentionally small. The library has four layers:
 
-1. Public API: `diagnose` and `diagnose_join`.
+1. Public API: `diagnose`, `diagnose_execution`, `diagnose_join`, and `diagnose_plan_text`.
 2. Adapters: normalize Pandas and PySpark objects into a `DataProfile`.
 3. Detectors: pure functions that turn a `DataProfile` into findings.
 4. Reporters: console, JSON, Markdown, and HTML rendering.
@@ -24,7 +24,7 @@ src/pipedoctor/
 
 ## Adapter Contract
 
-Adapters return `DataProfile`, a small normalized object with schema, nulls, duplicate metrics, cardinality, numeric stats, partition metadata, CDC hints, and optional Spark plan text.
+Adapters return `DataProfile`, a small normalized object with schema, nulls, duplicate metrics, cardinality, numeric stats, partition metadata, CDC hints, execution metrics, and optional Spark plan text.
 
 Adapters should be lazy. PipeDoctor should not import Pandas, PySpark, or warehouse SDKs unless the user actually passes that type of object.
 

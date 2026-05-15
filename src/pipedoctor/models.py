@@ -86,6 +86,7 @@ class DataProfile:
     hot_values: Dict[str, Dict[str, Any]] = field(default_factory=dict)
     partitions: Dict[str, Any] = field(default_factory=dict)
     cdc: Dict[str, Any] = field(default_factory=dict)
+    execution: Dict[str, Any] = field(default_factory=dict)
     plan_text: Optional[str] = None
     sampled: bool = False
     sample_rows: Optional[int] = None
