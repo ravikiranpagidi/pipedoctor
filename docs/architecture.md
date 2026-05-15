@@ -1,6 +1,6 @@
 # PipeDoctor Architecture
 
-PipeDoctor V1 is intentionally small. The library has four layers:
+PipeDoctor is intentionally small. The library has four layers:
 
 1. Public API: `diagnose` and `diagnose_join`.
 2. Adapters: normalize Pandas and PySpark objects into a `DataProfile`.
@@ -46,7 +46,7 @@ Rules should be:
 
 ## Spark Safety
 
-Spark analysis uses bounded sampling for V1. Full-table data-quality checks are valuable, but they should be explicit in a future `mode="full"` API. The default path should not surprise users with expensive jobs.
+Spark analysis uses bounded sampling by default. Full-table data-quality checks are valuable, but they should be explicit in a future `mode="full"` API. The default path should not surprise users with expensive jobs.
 
 ## Future Plugin Direction
 

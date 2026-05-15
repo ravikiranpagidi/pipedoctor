@@ -1,5 +1,5 @@
 """Recommendation hooks for future rule packs.
 
-V1 keeps recommendations close to findings so reports stay explainable. This
+Recommendations stay close to findings so reports remain explainable. This
 package exists as the future home for richer recommendation engines.
 """

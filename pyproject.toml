@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "pipedoctor"
 version = "0.1.0"
-description = "Instant health checks and diagnostics for Spark, Pandas, SQL, and data pipelines."
+description = "Instant health checks and diagnostics for Pandas, PySpark, and data pipelines."
 readme = "README.md"
 requires-python = ">=3.9"
 license = "MIT"

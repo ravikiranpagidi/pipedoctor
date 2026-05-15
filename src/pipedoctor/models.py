@@ -32,8 +32,8 @@ SEVERITY_ORDER = {
 class DiagnoseOptions:
     """User-facing diagnosis options.
 
-    V1 intentionally keeps this small. More knobs can be added without changing
-    the one-line ``diagnose(df)`` workflow.
+    The option set stays small so more knobs can be added without changing the
+    one-line ``diagnose(df)`` workflow.
     """
 
     name: str = "dataframe"

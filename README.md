@@ -1,16 +1,27 @@
 # PipeDoctor
 
-Instant health checks and diagnostics for Spark, Pandas, SQL, and data pipelines.
+Instant health checks and diagnostics for Pandas, PySpark, and data pipelines.
 
 PipeDoctor is a small Python library for the first 30 seconds of pipeline debugging: null spikes, duplicate records, schema drift, skew, risky joins, partition smells, CDC ordering issues, and plan-level performance hints.
 
-It is not an orchestration platform or a monitoring dashboard. It is a fast local doctor for data engineers who want a useful answer now.
+It is not an orchestration platform or a monitoring dashboard. It is a fast local doctor for data engineers who want a useful answer while the DataFrame is still in front of them.
 
 ```python
 from pipedoctor import diagnose
 
 report = diagnose(df)
 ```
+
+## One Call, Engine-Aware Underneath
+
+`diagnose(df)` is the public API. PipeDoctor inspects the object you pass in, selects the matching adapter, builds a normalized profile, and runs the same detector set on top of that profile.
+
+| Input today | What PipeDoctor does |
+| --- | --- |
+| Pandas `DataFrame` | Profiles the local DataFrame directly |
+| PySpark `DataFrame` | Uses bounded sampling plus Spark schema and plan signals |
+
+That design keeps the call site simple while letting the internals stay engine-specific. You do not need separate functions such as `diagnose_pandas()` or `diagnose_spark()`. The current release supports Pandas and PySpark. Future SQL relation or SQL-text adapters can use the same public entry point once they are implemented, so users should not need to learn a second API for each engine.
 
 Example output:
 
@@ -104,7 +115,7 @@ report = diagnose(
 )
 ```
 
-For Spark, V1 uses bounded sampling for data-quality checks and parses the execution plan for shuffle, join, UDF, sort, and partition hints. That keeps the default notebook workflow practical.
+For Spark, PipeDoctor uses bounded sampling for data-quality checks and parses the execution plan for shuffle, join, UDF, sort, and partition hints. That keeps the default notebook workflow practical.
 
 ## Schema Drift
 
@@ -136,7 +147,7 @@ pipedoctor csv examples/orders.csv --key customer_id
 pipedoctor csv examples/orders.csv --format markdown --output report.md
 ```
 
-## What V1 Checks
+## What It Checks Today
 
 | Area | Checks |
 | --- | --- |
@@ -171,6 +182,7 @@ report.to_json("report.json")
 - one-line first use
 - no required runtime dependencies
 - lazy Pandas and PySpark support
+- one public API with engine-specific adapters underneath
 - safe bounded sampling for Spark
 - plain Python report objects
 - explainable rules, not magic scores
@@ -191,7 +203,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) and [docs/architecture.md](docs/architect
 
 ## Roadmap
 
-V2:
+Near term:
 
 - custom rule registry
 - richer Spark skew metrics
@@ -199,7 +211,7 @@ V2:
 - Delta Lake and Iceberg metadata checks
 - notebook widgets for before/after comparisons
 
-V3:
+Later:
 
 - AI-ready recommendation bundles
 - OpenTelemetry export

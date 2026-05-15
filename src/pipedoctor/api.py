@@ -114,7 +114,7 @@ def _profile(df: Any, options: DiagnoseOptions) -> DataProfile:
             sample_rows=options.sample_rows,
         )
     raise TypeError(
-        "PipeDoctor V1 supports Pandas and PySpark DataFrames. "
+        "PipeDoctor supports Pandas and PySpark DataFrames. "
         f"Got {type(df).__module__}.{type(df).__name__}."
     )
 
