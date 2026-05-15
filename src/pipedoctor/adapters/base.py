@@ -8,7 +8,7 @@ from typing import Any
 def engine_name(obj: Any) -> str:
     module = type(obj).__module__
     name = type(obj).__name__
-    if module.startswith("pandas.") and name == "DataFrame":
+    if (module == "pandas" or module.startswith("pandas.")) and name == "DataFrame":
         return "pandas"
     if module.startswith("pyspark.") and name == "DataFrame":
         return "pyspark"
