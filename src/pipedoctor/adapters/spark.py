@@ -51,25 +51,6 @@ def profile_spark(
     )
 
 
-def profile_spark_execution(df: Any, *, name: str) -> DataProfile:
-    """Build a lightweight Spark profile for execution diagnostics."""
-
-    columns = [str(col) for col in df.columns]
-    plan_text = _plan_text(df)
-    return DataProfile(
-        engine="pyspark",
-        name=name,
-        rows=None,
-        columns=columns,
-        schema=_schema(df),
-        partitions=_partitions(df),
-        execution={"plan_lines": len(plan_text.splitlines()) if plan_text else 0},
-        plan_text=plan_text,
-        sampled=False,
-        sample_rows=None,
-    )
-
-
 def _schema(df: Any) -> Dict[str, Dict[str, Any]]:
     result: Dict[str, Dict[str, Any]] = {}
     for field in df.schema.fields:

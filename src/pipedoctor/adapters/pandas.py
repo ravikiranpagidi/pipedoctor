@@ -24,7 +24,6 @@ def profile_pandas(
     numeric = _numeric_profile(df)
     hot_values = _hot_values(df, key_columns, row_count)
     cdc = _cdc_profile(df, key_columns, cdc_order_column)
-    execution = _execution_profile(df)
     return DataProfile(
         engine="pandas",
         name=name,
@@ -37,24 +36,6 @@ def profile_pandas(
         numeric=numeric,
         hot_values=hot_values,
         cdc=cdc,
-        execution=execution,
-        sampled=False,
-        sample_rows=row_count,
-    )
-
-
-def profile_pandas_execution(df: Any, *, name: str) -> DataProfile:
-    """Build a lightweight Pandas profile for execution diagnostics."""
-
-    row_count = int(len(df))
-    columns = [str(col) for col in df.columns]
-    return DataProfile(
-        engine="pandas",
-        name=name,
-        rows=row_count,
-        columns=columns,
-        schema=_schema(df),
-        execution=_execution_profile(df),
         sampled=False,
         sample_rows=row_count,
     )
@@ -62,8 +43,8 @@ def profile_pandas_execution(df: Any, *, name: str) -> DataProfile:
 
 def _schema(df: Any) -> Dict[str, Dict[str, Any]]:
     result: Dict[str, Dict[str, Any]] = {}
-    for index, column in enumerate(df.columns):
-        series = df.iloc[:, index]
+    for column in df.columns:
+        series = df[column]
         result[str(column)] = {
             "type": str(series.dtype),
             "nullable": bool(series.isna().any()),
@@ -176,26 +157,6 @@ def _cdc_profile(
             if group[cdc_order_column].is_monotonic_increasing is False:
                 result["late_events"] += 1
     return result
-
-
-def _execution_profile(df: Any) -> Dict[str, Any]:
-    object_columns = [
-        str(column)
-        for column in df.select_dtypes(include=["object", "string"]).columns
-    ]
-    column_count = int(len(df.columns))
-    memory_bytes = int(df.memory_usage(index=True, deep=True).sum())
-    return {
-        "memory_bytes": memory_bytes,
-        "memory_mb": round(memory_bytes / (1024 * 1024), 2),
-        "object_columns": object_columns,
-        "object_column_count": len(object_columns),
-        "object_column_ratio": float(len(object_columns) / column_count)
-        if column_count
-        else 0.0,
-        "duplicate_index_count": int(df.index.duplicated().sum()),
-        "duplicate_column_count": int(df.columns.duplicated().sum()),
-    }
 
 
 def _to_float(value: Any) -> Optional[float]:
