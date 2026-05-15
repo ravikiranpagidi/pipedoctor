@@ -6,6 +6,11 @@ PipeDoctor is a small Python library for the first 30 seconds of pipeline debugg
 
 It is not an orchestration platform or a monitoring dashboard. It is a fast local doctor for data engineers who want a useful answer while the DataFrame is still in front of them.
 
+Documentation wiki: [github.com/ravikiranpagidi/pipedoctor/wiki](https://github.com/ravikiranpagidi/pipedoctor/wiki)  
+Capability guide: [Capabilities](https://github.com/ravikiranpagidi/pipedoctor/wiki/Capabilities)  
+Installation guide: [Installation](https://github.com/ravikiranpagidi/pipedoctor/wiki/Installation)  
+Common workflows: [Common Workflows](https://github.com/ravikiranpagidi/pipedoctor/wiki/Common-Workflows)
+
 ```python
 from pipedoctor import diagnose
 
@@ -176,6 +181,19 @@ All report methods also accept a path:
 ```python
 report.to_json("report.json")
 ```
+
+## Documentation
+
+| Guide | Best for |
+| --- | --- |
+| [Wiki Home](https://github.com/ravikiranpagidi/pipedoctor/wiki) | Project overview and where PipeDoctor fits |
+| [Capabilities](https://github.com/ravikiranpagidi/pipedoctor/wiki/Capabilities) | What the library checks today |
+| [Installation](https://github.com/ravikiranpagidi/pipedoctor/wiki/Installation) | GitHub install, local development, and notebook setup |
+| [Quick Start](https://github.com/ravikiranpagidi/pipedoctor/wiki/Quick-Start) | First diagnosis with Pandas and PySpark |
+| [Common Workflows](https://github.com/ravikiranpagidi/pipedoctor/wiki/Common-Workflows) | Useful checkpoints in real pipeline work |
+| [Reading Reports](https://github.com/ravikiranpagidi/pipedoctor/wiki/Reading-Reports) | How to interpret severity, evidence, and recommendations |
+| [Detector Documentation](https://github.com/ravikiranpagidi/pipedoctor/wiki/Detector-Documentation) | Detailed detector behavior and limitations |
+| [Architecture Overview](https://github.com/ravikiranpagidi/pipedoctor/wiki/Architecture-Overview) | Adapters, profiles, detectors, and report flow |
 
 ## Design Principles
 
