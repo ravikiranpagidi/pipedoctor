@@ -1,0 +1,71 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pipedoctor"
+version = "0.1.0"
+description = "Instant health checks and diagnostics for Spark, Pandas, SQL, and data pipelines."
+readme = "README.md"
+requires-python = ">=3.9"
+license = "MIT"
+authors = [
+  { name = "Ravi Kiran Pagidi" }
+]
+keywords = [
+  "data-engineering",
+  "pandas",
+  "pyspark",
+  "spark",
+  "data-quality",
+  "pipeline",
+  "diagnostics",
+  "schema-drift",
+  "skew",
+  "etl",
+  "observability"
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Framework :: Jupyter",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Information Technology",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Database",
+  "Topic :: Scientific/Engineering :: Information Analysis",
+  "Topic :: Software Development :: Quality Assurance",
+  "Topic :: System :: Monitoring"
+]
+dependencies = []
+
+[project.optional-dependencies]
+pandas = ["pandas>=1.5"]
+spark = ["pyspark>=3.4"]
+dev = [
+  "pandas>=1.5",
+  "pytest>=8.0",
+  "build>=1.2",
+  "twine>=5.0"
+]
+
+[project.urls]
+Homepage = "https://github.com/ravikiranpagidi/pipedoctor"
+Repository = "https://github.com/ravikiranpagidi/pipedoctor"
+Issues = "https://github.com/ravikiranpagidi/pipedoctor/issues"
+
+[project.scripts]
+pipedoctor = "pipedoctor.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pipedoctor"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+addopts = "-q"
